@@ -365,10 +365,15 @@ end
 function PaycheckInterval()
     if next(RSGCore.Players) then
         for _, Player in pairs(RSGCore.Players) do
-            if Player then
-                local payment = RSGShared.Jobs[Player.PlayerData.job.name]['grades'][tostring(Player.PlayerData.job.grade.level)].payment
-                if not payment then payment = Player.PlayerData.job.payment end
-                if Player.PlayerData.job and payment > 0 and (RSGShared.Jobs[Player.PlayerData.job.name].offDutyPay or Player.PlayerData.job.onduty) then
+            if Player and Player.PlayerData.job and Player.PlayerData.job.grade then
+                -- Handle custom jobs (like society jobs) that aren't in RSGShared.Jobs
+                local jobData = RSGShared.Jobs[Player.PlayerData.job.name]
+                local payment = 0
+                if jobData and jobData.grade and jobData.grade[tostring(Player.PlayerData.job.grade.level)] then
+                    payment = jobData.grade[tostring(Player.PlayerData.job.grade.level)].payment
+                end
+                if payment == 0 then payment = Player.PlayerData.job.payment or 0 end
+                if Player.PlayerData.job and payment > 0 and (jobData and jobData.offDutyPay or Player.PlayerData.job.onduty) then
                     if RSGCore.Config.Money.PayCheckSociety then
                         local account = exports['rsg-banking']:GetAccountBalance(Player.PlayerData.job.name)
                         if account ~= 0 then          -- Checks if player is employed by a society

@@ -117,6 +117,17 @@ function RSGCore.Player.CheckPlayerData(source, PlayerData)
         end
     end
 
+    if validatedJob == false and PlayerData.job and PlayerData.job.name and PlayerData.job.label and PlayerData.job.grade and PlayerData.job.grade.level ~= nil then
+        PlayerData.job.type = PlayerData.job.type or 'custom'
+        PlayerData.job.payment = PlayerData.job.payment or 0
+        PlayerData.job.onduty = PlayerData.job.onduty ~= false
+        PlayerData.job.isboss = PlayerData.job.isboss == true
+        PlayerData.job.grade.name = PlayerData.job.grade.name or ('Grade ' .. tostring(PlayerData.job.grade.level))
+        PlayerData.job.grade.payment = PlayerData.job.grade.payment or PlayerData.job.payment or 0
+        PlayerData.job.grade.isboss = PlayerData.job.grade.isboss == true or PlayerData.job.isboss == true
+        validatedJob = true
+    end
+
     if validatedJob == false then
         -- set to nil, as the default job (unemployed) will be added by `applyDefaults`
         PlayerData.job = nil
